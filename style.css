@@ -68,6 +68,21 @@ body {
 }
 .drop-zone:hover, .drop-zone.dragover { border-color: var(--amber); }
 
+.drop-zone--cropping {
+  aspect-ratio: auto;
+  overflow: visible;
+  cursor: default;
+  border-style: solid;
+  border-color: var(--amber);
+}
+
+.crop-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+.crop-actions .btn { margin-top: 14px; }
+
 .drop-placeholder {
   display: flex;
   flex-direction: column;

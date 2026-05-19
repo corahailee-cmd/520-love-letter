@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@1&family=Noto+Serif+SC:wght@300&family=Playfair+Display:ital@1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -29,7 +30,11 @@
       <img id="preview-img" class="preview-img" alt="预览" hidden />
     </div>
 
-    <button id="btn-generate" class="btn btn-primary" hidden>生成情书</button>
+    <div id="bottom-actions" class="crop-actions" hidden>
+      <button id="btn-reselect" class="btn btn-secondary">重新选择</button>
+      <button id="btn-confirm-crop" class="btn btn-primary">确认裁剪</button>
+      <button id="btn-generate" class="btn btn-primary" hidden>生成情书</button>
+    </div>
     <p id="upload-error" class="error-text" hidden></p>
   </div>
 
@@ -95,6 +100,7 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

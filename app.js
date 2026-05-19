@@ -12,19 +12,23 @@ const pages = {
   loading: document.getElementById('page-loading'),
   result:  document.getElementById('page-result'),
 };
-const dropZone    = document.getElementById('drop-zone');
-const fileInput   = document.getElementById('file-input');
-const previewImg  = document.getElementById('preview-img');
-const dropHolder  = document.getElementById('drop-placeholder');
-const btnGenerate = document.getElementById('btn-generate');
-const btnReset    = document.getElementById('btn-reset');
-const btnSave     = document.getElementById('btn-save');
-const uploadError = document.getElementById('upload-error');
-const resultError = document.getElementById('result-error');
-const saveHint    = document.getElementById('save-hint');
+const dropZone       = document.getElementById('drop-zone');
+const fileInput      = document.getElementById('file-input');
+const previewImg     = document.getElementById('preview-img');
+const dropHolder     = document.getElementById('drop-placeholder');
+const btnGenerate    = document.getElementById('btn-generate');
+const btnReset       = document.getElementById('btn-reset');
+const btnSave        = document.getElementById('btn-save');
+const btnReselect    = document.getElementById('btn-reselect');
+const btnConfirmCrop = document.getElementById('btn-confirm-crop');
+const bottomActions  = document.getElementById('bottom-actions');
+const uploadError    = document.getElementById('upload-error');
+const resultError    = document.getElementById('result-error');
+const saveHint       = document.getElementById('save-hint');
 
-let currentBase64 = null;    // 压缩后的 base64，仅用于 API 调用
-let currentOriginalUrl = null; // 原图 dataURL，用于卡片展示
+let currentBase64 = null;      // 压缩后的 base64，仅用于 API 调用
+let currentOriginalUrl = null; // 裁剪后的 dataURL，用于卡片展示
+let cropper = null;            // Cropper.js 实例
 
 // ── 页面切换 ──
 function showPage(name) {
@@ -32,8 +36,10 @@ function showPage(name) {
   pages[name].classList.add('active');
 }
 
-// ── 上传 / 预览 ──
-dropZone.addEventListener('click', () => fileInput.click());
+// ── 上传 ──
+dropZone.addEventListener('click', () => {
+  if (!cropper) fileInput.click();
+});
 
 dropZone.addEventListener('dragover', e => {
   e.preventDefault();
@@ -62,15 +68,62 @@ function handleFile(file) {
 
   const reader = new FileReader();
   reader.onload = e => {
-    currentOriginalUrl = e.target.result;
-    previewImg.src = currentOriginalUrl;
+    // 销毁旧 cropper
+    if (cropper) { cropper.destroy(); cropper = null; }
+
+    previewImg.src = e.target.result;
     previewImg.hidden = false;
     dropHolder.style.display = 'none';
-    btnGenerate.hidden = false;
-    compressImage(currentOriginalUrl);
+    dropZone.classList.add('drop-zone--cropping');
+    bottomActions.hidden = false;
+    btnConfirmCrop.hidden = false;
+    btnGenerate.hidden = true;
+
+    // 初始化 Cropper.js
+    cropper = new Cropper(previewImg, {
+      aspectRatio: 1,
+      viewMode: 1,
+      autoCropArea: 1,
+      movable: true,
+      zoomable: false,
+      rotatable: false,
+      scalable: false,
+    });
   };
   reader.readAsDataURL(file);
 }
+
+// ── 重新选择 ──
+btnReselect.addEventListener('click', () => {
+  if (cropper) { cropper.destroy(); cropper = null; }
+  previewImg.src = '';
+  previewImg.hidden = true;
+  dropHolder.style.display = '';
+  dropZone.classList.remove('drop-zone--cropping');
+  bottomActions.hidden = true;
+  btnGenerate.hidden = true;
+  fileInput.value = '';
+  hideUploadError();
+  fileInput.click();
+});
+
+// ── 确认裁剪 ──
+btnConfirmCrop.addEventListener('click', () => {
+  if (!cropper) return;
+  const canvas = cropper.getCroppedCanvas({ width: 1200, height: 1200 });
+  currentOriginalUrl = canvas.toDataURL('image/jpeg', 0.95);
+
+  // 销毁 cropper，切换为预览模式
+  cropper.destroy();
+  cropper = null;
+  previewImg.src = currentOriginalUrl;
+  dropZone.classList.remove('drop-zone--cropping');
+  btnConfirmCrop.hidden = true;
+  btnGenerate.hidden = false;
+
+  // 压缩供 API 使用
+  compressImage(currentOriginalUrl);
+});
 
 function compressImage(dataUrl) {
   const img = new Image();
@@ -160,8 +213,7 @@ function cropSquare(dataUrl) {
 
 // ── 渲染卡片 ──
 async function renderCard({ colorNameZh, colorNameEn, hex, letter }) {
-  const cropped = await cropSquare(currentOriginalUrl);
-  document.getElementById('card-photo').src = cropped;
+  document.getElementById('card-photo').src = currentOriginalUrl;
   document.getElementById('card-dot').style.background = hex;
   document.getElementById('card-name-zh').textContent = colorNameZh;
   document.getElementById('card-name-en').textContent = colorNameEn;
@@ -171,12 +223,15 @@ async function renderCard({ colorNameZh, colorNameEn, hex, letter }) {
 
 // ── 重置 ──
 btnReset.addEventListener('click', () => {
+  if (cropper) { cropper.destroy(); cropper = null; }
   currentBase64 = null;
   currentOriginalUrl = null;
   fileInput.value = '';
   previewImg.src = '';
   previewImg.hidden = true;
   dropHolder.style.display = '';
+  dropZone.classList.remove('drop-zone--cropping');
+  bottomActions.hidden = true;
   btnGenerate.hidden = true;
   hideUploadError();
   resultError.hidden = true;
