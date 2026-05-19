@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>回忆的颜色</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@1&family=Noto+Serif+SC:wght@300&family=Playfair+Display:ital@1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- 上传页 -->
+  <div id="page-upload" class="page active">
+    <h1 class="app-title">回忆的颜色</h1>
+    <p class="app-subtitle">上传一张照片，生成专属情书色卡</p>
+
+    <div id="drop-zone" class="drop-zone">
+      <input type="file" id="file-input" accept="image/*" capture="environment" hidden />
+      <div id="drop-placeholder" class="drop-placeholder">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        <span>点击或拖拽上传照片</span>
+      </div>
+      <img id="preview-img" class="preview-img" alt="预览" hidden />
+    </div>
+
+    <button id="btn-generate" class="btn btn-primary" hidden>生成情书</button>
+    <p id="upload-error" class="error-text" hidden></p>
+  </div>
+
+  <!-- Loading 页 -->
+  <div id="page-loading" class="page">
+    <div class="ink-drop"></div>
+    <p class="loading-zh">正在感受这张照片的颜色</p>
+    <p class="loading-en">writing your love letter...</p>
+  </div>
+
+  <!-- 结果页 -->
+  <div id="page-result" class="page">
+    <div id="capture" class="capture">
+    <div id="card" class="card">
+      <!-- 拍立得照片区 -->
+      <div class="polaroid">
+        <img id="card-photo" class="card-photo" alt="你的照片" />
+        <div class="polaroid-bottom">
+          <span id="card-dot" class="color-dot"></span>
+          <span class="always-text">520 always</span>
+        </div>
+      </div>
+
+      <!-- 颜色信息 -->
+      <div class="label-row">
+        <span class="label-line"></span>
+        <span class="label-text">你的回忆颜色是</span>
+        <span class="label-line"></span>
+      </div>
+
+      <div class="color-info">
+        <span id="card-name-zh" class="color-name-zh"></span>
+      </div>
+      <p id="card-name-en" class="color-name-en"></p>
+
+      <!-- 情话 -->
+      <p id="card-letter" class="card-letter"></p>
+
+      <!-- 页脚 -->
+      <div class="card-footer">
+        <span class="footer-brand">爱摄影，找同好，上太平洋摄影部落</span>
+      </div>
+    </div>
+    </div>
+
+    <div class="result-actions">
+      <button id="btn-reset" class="btn btn-secondary">换一张</button>
+      <button id="btn-save" class="btn btn-primary">保存卡片</button>
+    </div>
+    <p id="save-hint" class="save-hint" hidden>请长按卡片截图保存 📸</p>
+    <p id="result-error" class="error-text" hidden></p>
+
+    <div class="ad-card">
+      <div class="ad-body">
+        <div class="ad-text">
+          <p class="ad-prize">免费拿 <em>富士拍立得 mini 12</em> 等惊喜好礼</p>
+          <p class="ad-action">来太平洋科技小程序 <em>「摄影部落」</em></p>
+          <p class="ad-tag">带话题 <span class="ad-hashtag">#520好搭子</span> 晒出你的TA</p>
+        </div>
+        <img src="qrcode.png" alt="摄影部落小程序二维码" class="ad-qr" />
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
