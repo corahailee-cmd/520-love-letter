@@ -44,7 +44,7 @@ export default async function handler(req) {
   }
 
   const payload = {
-    model: 'doubao-1-5-vision-pro-32k-250115',
+    model: 'ep-20260520101657-msr9n',
     max_tokens: 800,
     messages: [
       {
